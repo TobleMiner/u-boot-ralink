@@ -592,9 +592,9 @@ init_fnc_t *init_sequence[] = {
 	env_init,		/* initialize environment */
 	init_baudrate,		/* initialze baudrate settings */
 	serial_init,		/* serial communications setup */
-	pci_power_init,
 	console_init_f,
 	display_banner,		/* say that we are here */
+	pci_power_init,
 	checkboard,
 	init_func_ram,
 	NULL,
@@ -603,8 +603,19 @@ init_fnc_t *init_sequence[] = {
 
 
 int pci_power_init(void) {
-        RALINK_REG(RT2880_REG_PIODIR)  |= 1 << 9; // set gpio 9 as output
-        RALINK_REG(RT2880_REG_PIODATA) |= 1 << 9; // pull it high
+        // Because of shitty mediatek drivers we have to bring all pci devices up
+        // as soon as possible. Enabling the power regulators in the bootloader
+        // should give the pci devices enough time to get their link ready before
+        // the OS has booted
+        // gpio 9 through 11 are connected to the enable pins
+        // of the pcie power regulators
+        int i;
+	for(i = 0; i < 3; i++) {
+	        printf("Enabling pcie%d vcc regulator\n", i);
+                RALINK_REG(RT2880_REG_PIODIR)  |= 1 << (9 + i); // set gpio as output
+                RALINK_REG(RT2880_REG_PIODATA) |= 1 << (9 + i); // pull it high
+        }
+        return 0;
 }
 
 //  
@@ -728,9 +739,9 @@ __attribute__((nomips16)) void board_init_f(ulong bootflag)
 	env_init();		/* initialize environment */
 	init_baudrate();		/* initialze baudrate settings */
 	serial_init();		/* serial communications setup */
-	pci_power_init();
 	console_init_f();
 	display_banner();		/* say that we are here */
+	pci_power_init();
 	checkboard();
 
 	init_func_ram(); 
