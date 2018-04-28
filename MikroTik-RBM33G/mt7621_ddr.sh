@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 VAR=$4
 DDR3=$(echo ${VAR##*DDR3})
