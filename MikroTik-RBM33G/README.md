@@ -1,10 +1,13 @@
 Toolchain
 =========
-Please use [OpenWrt Toolchain 12.09](https://downloads.openwrt.org/attitude_adjustment/12.09/ramips/rt288x/).
+Please use a recent OpenWRT toolchain (tested with [17.01.4](https://archive.openwrt.org/releases/17.01.4/targets/ramips/mt7621/lede-sdk-17.01.4-ramips-mt7621_gcc-5.4.0_musl-1.1.16.Linux-x86_64.tar.xz)) for compilation
 
 How to compile
 ==============
-```shell
+
+1. Add toolchain bin directory to path
+
+2. ```shell
 export BUILD_TOPDIR=$(pwd)
 export STAGING_DIR=$BUILD_TOPDIR/tmp
 
